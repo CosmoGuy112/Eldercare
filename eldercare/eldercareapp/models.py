@@ -25,7 +25,7 @@ class Appointment(models.Model):
     elder = models.ForeignKey(ElderProfile, on_delete=models.CASCADE)
     caregiver = models.ForeignKey(CaregiverProfile, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField()
-    location = models.CharField(max_length=255) # เช่น ชื่อโรงพยาบาล
+    location = models.CharField(max_length=255) 
     price = models.DecimalField(max_digits=8, decimal_places=2)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='pending')
 
