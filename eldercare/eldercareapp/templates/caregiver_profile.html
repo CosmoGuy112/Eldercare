@@ -1,0 +1,27 @@
+<h2>Caregiver Profile: {{ caregiver.user.username }}</h2>
+
+<p>Experience: {{ caregiver.experience }}</p>
+<p>License Number: {{ caregiver.license_number }}</p>
+
+<h3>Appointment History</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Elder</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for appointment in caregiver.appointment_set.all %}
+        <tr>
+            <td>{{ appointment.date }}</td>
+            <td>{{ appointment.location }}</td>
+            <td>{{ appointment.elder.user.username }}</td>
+            <td>{{ appointment.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

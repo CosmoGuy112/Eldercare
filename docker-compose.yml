@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data  # Persistent data storage
+    env_file:
+      - .env
+
+  web:
+    build:
+      context: eldercare/
+    ports:
+      - "8000:8000"  # Exposing internal port 8000 for web container
+    command: [ "sh", "./start.sh" ]
+    volumes:
+      - ./eldercare:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    #      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
