@@ -1,16 +1,33 @@
-# eldercare/views.py
+# views.py
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from .models import *
 # from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.views import View
 # ... (views อื่นๆ)
+
+class RegisterView(View):
+    def get(self, request):
+        form = UserCreationForm()
+        return render(request, 'register.html', {"form": form})
+
+    def post(self, request):
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            print("Registration successful!")
+            return render(request, 'register.html', {"form": form})
+            
+        # If the form is not valid, render the registration page again with the form and errors
+        return render(request, 'register.html', {"form": form})
 
 # @login_required
 def create_appointment(request):
     if request.method == 'POST':
         # ... (process form data and create Appointment object)
         return redirect('appointment_list')
-    return render(request, 'eldercare/create_appointment.html')
+    return render(request, 'create_appointment.html')
 
 
 # @login_required
@@ -31,9 +48,9 @@ def appointment_list(request):
 
 def caregiver_profile(request, caregiver_id):
     caregiver = get_object_or_404(CaregiverProfile, pk=caregiver_id)
-    return render(request, 'eldercare/caregiver_profile.html', {'caregiver': caregiver})
+    return render(request, 'caregiver_profile.html', {'caregiver': caregiver})
 
 
 def elder_profile(request, elder_id):
     elder = get_object_or_404(ElderProfile, pk=elder_id)
-    return render(request, 'eldercare/elder_profile.html', {'elder': elder})
+    return render(request, 'elder_profile.html', {'elder': elder})
