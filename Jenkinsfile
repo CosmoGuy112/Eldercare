@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out repository...'
-                git url: 'https://github.com/aomati145/Devtools.git',
+                git url: 'https://github.com/CosmoGuy112/Eldercare',
                     branch: 'master',
                     credentialsId: 'github'
             }
