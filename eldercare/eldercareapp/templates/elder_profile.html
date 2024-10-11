@@ -1,10 +1,30 @@
-<!-- eldercare/templates/eldercare/elder_profile.html -->
-
 <h2>Elder Profile: {{ elder.user.username }}</h2>
 
-<p>Phone Number: {{ elder.phone_number }}</p>
-<p>Address: {{ elder.address }}</p>
-<p>Medical Conditions: {{ elder.medical_conditions }}</p>
+<form method="POST" enctype="multipart/form-data">  
+    {% csrf_token %}
+    
+    <div>
+        <label>Phone Number:</label>
+        {{ form.phone_number }}
+    </div>
+    
+    <div>
+        <label>Address:</label>
+        {{ form.address }}
+    </div>
+    
+    <div>
+        <label>Medical Conditions:</label>
+        {{ form.medical_conditions }}
+    </div>
+    
+    <div>
+        <label>Profile Image:</label>
+        {{ form.image }}
+    </div>
+    
+    <button type="submit">Update Profile</button>
+</form>
 
 <h3>Appointment History</h3>
 
@@ -28,4 +48,3 @@
         {% endfor %}
     </tbody>
 </table>
-

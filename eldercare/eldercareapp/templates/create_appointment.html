@@ -1,10 +1,26 @@
 <!-- eldercare/templates/eldercare/create_appointment.html -->
 {% extends "layout.html" %}
 {% block content %}
-<form method="post">
+<form method="POST">
     {% csrf_token %}
-    <!--  ... (form fields for date, location, price) ... -->
+    <label for="caregiver">Select Caregiver:</label>
+    <select name="caregiver" id="caregiver">
+      {% for caregiver in caregivers %}
+        <option value="{{ caregiver.id }}">{{ caregiver.user.username }}</option>
+      {% endfor %}
+    </select>
+    
+    <label for="date">Date:</label>
+    <input type="date" name="date" id="date" required>
+    
+    <label for="location">Location:</label>
+    <input type="text" name="location" id="location" required>
+  
+    <label for="price">Price:</label>
+    <input type="number" name="price" id="price" required>
+  
     <button type="submit">Create Appointment</button>
-</form>
+  </form>
+  
 
 {% endblock %}
