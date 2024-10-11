@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo 'Checking out repository...'
                 git url: 'https://github.com/CosmoGuy112/Eldercare',
-                    branch: 'master',
+                    branch: 'main',
                     credentialsId: 'github'
             }
         }
