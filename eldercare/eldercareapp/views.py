@@ -1,10 +1,11 @@
 # views.py
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.shortcuts import render, redirect
 from .models import *
 # from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.contrib.auth import logout, login
 # ... (views อื่นๆ)
 
 class RegisterView(View):
@@ -21,6 +22,27 @@ class RegisterView(View):
             
         # If the form is not valid, render the registration page again with the form and errors
         return render(request, 'register.html', {"form": form})
+    
+class LoginView(View):
+    def get(self, request):
+        form = AuthenticationForm()
+        return render(request, 'login.html', {"form": form})
+    
+    def post(self, request):
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user() 
+            login(request,user)
+            return redirect('create_appointment')  
+        
+        return render(request,'login.html', {"form":form})
+
+
+class LogoutView(View):
+    
+    def get(self, request):
+        logout(request)
+        return redirect('login')
 
 # @login_required
 def create_appointment(request):

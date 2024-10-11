@@ -1,7 +1,10 @@
 <!-- eldercare/templates/eldercare/create_appointment.html -->
+{% extends "layout.html" %}
+{% block content %}
 <form method="post">
     {% csrf_token %}
     <!--  ... (form fields for date, location, price) ... -->
     <button type="submit">Create Appointment</button>
 </form>
 
+{% endblock %}
