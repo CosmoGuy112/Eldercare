@@ -83,8 +83,13 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_NAME'),
         'USER': os.getenv('POSTGRES_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+<<<<<<< HEAD
         'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # เปลี่ยน 'db' เป็น 'localhost'
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
+=======
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
+        'PORT': os.getenv('POSTGRES_PORT', 5432),
+>>>>>>> a0cea5bdc6278dbfe29e8dbb2e5b2092b5b7797a
     }
 }
 
