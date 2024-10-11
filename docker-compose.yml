@@ -12,7 +12,7 @@ services:
     build:
       context: eldercare/
     ports:
-      - "8000:8000"  # Exposing internal port 8000 for web container
+      - "8000:8000"
     command: [ "sh", "./start.sh" ]
     volumes:
       - ./eldercare:/app
