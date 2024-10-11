@@ -12,6 +12,9 @@ class ElderProfile(models.Model):
     phone_number = models.CharField(max_length=20)
     address = models.CharField(max_length=255)
     medical_conditions = models.TextField(blank=True)
+    
+    def __str__(self):
+        return self.user
 
 
 class CaregiverProfile(models.Model):
@@ -19,7 +22,9 @@ class CaregiverProfile(models.Model):
     # เพิ่มข้อมูลอื่นๆ ของผู้ดูแล เช่น ประสบการณ์  ฯลฯ
     experience = models.TextField(blank=True)
     license_number = models.CharField(max_length=50, blank=True)
-
+    
+    def __str__(self):
+        return self.user
 
 class Appointment(models.Model):
     elder = models.ForeignKey(ElderProfile, on_delete=models.CASCADE)
@@ -28,5 +33,6 @@ class Appointment(models.Model):
     location = models.CharField(max_length=255) # เช่น ชื่อโรงพยาบาล
     price = models.DecimalField(max_digits=8, decimal_places=2)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='pending')
-
+    def __str__(self):
+        return f'Appointment with Dr. {self.elder.user} for {self.caregiver.user} on {self.date.strftime("YYYY-MM-DD HH:mm")}'    
 
