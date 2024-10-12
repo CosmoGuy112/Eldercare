@@ -7,20 +7,33 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
 from django.views.generic import ListView, DetailView
+from django.contrib.auth.models import Group
 
 
 class RegisterView(View):
     def get(self, request):
-        form = UserCreationForm()
-        return render(request, 'register.html', {"form": form})
+        form = RegisterForm()  
+        return render(request, 'register.html', {'form': form})
 
     def post(self, request):
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)  
         if form.is_valid():
-            form.save()
-            print("Registration successful!")
-            return redirect('login')  # redirect to login page after registration
-        return render(request, 'register.html', {"form": form})
+            user = form.save()
+
+            user_type = form.cleaned_data.get('user_type')
+            try:
+                if user_type == 'Elder':
+                    group = Group.objects.get(name="Elder")
+                else:
+                    group = Group.objects.get(name="Caregiver")
+                group.user_set.add(user)
+            except Group.DoesNotExist:
+                form.add_error(None, "Group does not exist.")
+                return render(request, 'register.html', {'form': form})
+
+            login(request, user)
+            return redirect('home')  
+        return render(request, 'register.html', {'form': form})
 
 class LoginView(View):
     def get(self, request):
@@ -32,15 +45,14 @@ class LoginView(View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('create_appointment')
+            return redirect('home')
         return render(request, 'login.html', {"form": form})
 
 class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
-    
-    
+
 class HomeView(ListView):
     model = CaregiverProfile
     template_name = 'home.html'
