@@ -1,40 +1,29 @@
 {% extends 'base.html' %}
-
+{% load static %}  <!-- เพิ่มบรรทัดนี้ -->
 {% block content %}
 <h1>{{ caregiver.name }}</h1>
-<img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}">
+
+{% if caregiver.photo %}
+    <img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}">
+{% else %}
+    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image">  <!-- เปลี่ยนเป็น path ที่ถูกต้อง -->
+{% endif %}
+
 <p>Experience: {{ caregiver.experience_years }} years</p>
 <p>Bio: {{ caregiver.bio }}</p>
 
-<h3>Book Appointment</h3>
+<h3>Book an Appointment</h3>
 <form method="POST" action="{% url 'book_appointment' caregiver.id %}">
     {% csrf_token %}
-    <input type="hidden" name="caregiver_id" value="{{ caregiver.id }}">
-    <label for="appointment_date">Appointment Date:</label>
-    <input type="datetime-local" name="appointment_date" required>
-    
-    <input type="submit" class="btn btn-success" value="Book Now">
+    <div class="mb-3">
+        <label for="appointment_date" class="form-label">Select Date</label>
+        <input type="date" name="appointment_date" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" name="location" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Confirm Booking</button>
 </form>
 
-<h3>Elder Bookings</h3>
-{% if elder_appointments %}
-    <ul>
-    {% for appointment in elder_appointments %}
-        <li>
-            Appointment with {{ appointment.caregiver.name }} on {{ appointment.appointment_date }} - Status: {{ appointment.status }}
-            <form method="POST" action="{% url 'update_status' appointment.id %}">
-                {% csrf_token %}
-                <select name="status">
-                    <option value="scheduled" {% if appointment.status == "scheduled" %}selected{% endif %}>Scheduled</option>
-                    <option value="completed" {% if appointment.status == "completed" %}selected{% endif %}>Completed</option>
-                    <option value="cancelled" {% if appointment.status == "cancelled" %}selected{% endif %}>Cancelled</option>
-                </select>
-                <input type="submit" class="btn btn-primary" value="Update Status">
-            </form>
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No bookings found.</p>
-{% endif %}
 {% endblock %}

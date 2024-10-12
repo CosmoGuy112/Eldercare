@@ -152,25 +152,31 @@ class listelder(View):
 class CaregiverDetailView(DetailView):
     model = CaregiverProfile
     template_name = 'caregiver_detail.html'
+    context_object_name = 'caregiver'
 
-    def get(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Assuming you have a way to get the elder user
-        context['elder_appointments'] = Appointment.objects.all()
+        context['elder_appointments'] = Appointment.objects.all()  # ข้อมูลการนัดหมาย
         return context
+
 
 class BookAppointmentView(View):
     def post(self, request, caregiver_id):
         appointment_date = request.POST['appointment_date']
+        location = request.POST['location']
         caregiver = get_object_or_404(CaregiverProfile, id=caregiver_id)
-        # Create appointment here, assuming you have the elder information
-        Appointment.objects.create(
+        
+        appointment = Appointment.objects.create(
             elder=request.user.elderprofile,
             caregiver=caregiver,
             appointment_date=appointment_date,
-            location='Hospital Phyathai',  # replace with actual location if needed
+            location=location,
             status='scheduled'
         )
+
+        # ส่งอีเมลหรือการแจ้งเตือนให้ caregiver (ถ้าต้องการ)
+        # send_email_to_caregiver(caregiver, appointment)
+
         return redirect('caregiver_detail', pk=caregiver_id)
 
 class UpdateStatusView(View):
