@@ -34,7 +34,7 @@ class RegisterView(View):
                 return render(request, 'register.html', {'form': form})
 
             login(request, user)
-            return redirect('create_elder_profile')  
+            return redirect('login')  
         return render(request, 'register.html', {'form': form})
 
 class LoginView(View):
