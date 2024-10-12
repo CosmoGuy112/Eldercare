@@ -11,6 +11,9 @@ from django.views.generic import ListView, DetailView,CreateView
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse_lazy
+from django.contrib import messages  
+from django.utils import timezone 
+from django.http import HttpResponseRedirect
 
 class RegisterView(View):
     def get(self, request):
@@ -160,28 +163,36 @@ class CaregiverDetailView(DetailView):
         return context
 
 
-class BookAppointmentView(View):
+
+class BookAppointmentView(LoginRequiredMixin, View):
     def post(self, request, caregiver_id):
-        appointment_date = request.POST['appointment_date']
-        location = request.POST['location']
-        caregiver = get_object_or_404(CaregiverProfile, id=caregiver_id)
+        appointment_date = request.POST.get('appointment_date')
+        location = request.POST.get('location')
 
         # ตรวจสอบว่า ElderProfile มีอยู่
-        elder_profile = ElderProfile.objects.filter(elder=request.user).first()
-        if not elder_profile:
-            # ส่งผู้ใช้ไปยังหน้า Create ElderProfile
-            return redirect('create_elder_profile')
+        elder_profile = get_object_or_404(ElderProfile, elder=request.user)
 
-        # สร้างการจอง
-        appointment = Appointment.objects.create(
+        # ตรวจสอบการจองที่มีอยู่ในวันที่นั้น
+        existing_appointment = Appointment.objects.filter(
+            caregiver_id=caregiver_id,
+            appointment_date=appointment_date
+        ).exists()
+
+        if existing_appointment:
+            messages.error(request, "มีการจองวันซ้ำกันในวันนี้")  
+            return redirect('caregiver_detail', pk=caregiver_id)  # Redirect กลับไปที่หน้า detail
+
+        # ถ้าไม่มีการจองซ้ำ ทำการสร้างการจอง
+        Appointment.objects.create(
             elder=elder_profile,
-            caregiver=caregiver,
+            caregiver_id=caregiver_id,
             appointment_date=appointment_date,
             location=location,
             status='scheduled'
         )
-        return redirect('caregiver_detail', pk=caregiver_id)
 
+        messages.success(request, "จองสำเร็จ!")  # Alert สีเขียว
+        return redirect('caregiver_detail', pk=caregiver_id)
     
 class UpdateStatusView(View):
     def post(self, request, appointment_id):
@@ -221,3 +232,21 @@ class MyProfileView(LoginRequiredMixin, View):
             form.save()
             return redirect('home')
         return render(request, "myprofile.html", {"form": form})
+    
+
+class AppointmentHistoryView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request):
+        # ดึงข้อมูล ElderProfile ของผู้ใช้ที่เข้าสู่ระบบ
+        elder_profile = get_object_or_404(ElderProfile, elder=request.user)
+        
+        # ดึงข้อมูลการนัดหมายที่เกี่ยวข้องกับ ElderProfile นี้
+        appointments = Appointment.objects.filter(elder=elder_profile)
+
+        context = {
+            'appointments': appointments
+        }
+        return render(request, 'appointment_history.html', context)
+
+    

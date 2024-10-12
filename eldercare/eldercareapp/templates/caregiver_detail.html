@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
-{% load static %}  <!-- เพิ่มบรรทัดนี้ -->
+{% load static %}
+
 {% block content %}
 <h1>{{ caregiver.name }}</h1>
 
 {% if caregiver.photo %}
     <img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}">
 {% else %}
-    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image">  <!-- เปลี่ยนเป็น path ที่ถูกต้อง -->
+    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image">
 {% endif %}
 
 <p>Experience: {{ caregiver.experience_years }} years</p>
 <p>Bio: {{ caregiver.bio }}</p>
+
 
 <h3>Book an Appointment</h3>
 <form method="POST" action="{% url 'book_appointment' caregiver.id %}">

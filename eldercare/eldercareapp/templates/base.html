@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -5,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ElderCare{% endblock %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'yourapp/css/styles.css' %}"> <!-- เปลี่ยน path ให้ตรงกับที่เก็บ -->
 </head>
 <body>
 
@@ -20,13 +19,11 @@
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <span class="navbar-text text-black me-2">I'm, {{ user.username }}</span>  <!-- ใช้ <span> แทน <p> -->
+                    <span class="navbar-text text-black me-2">I'm, {{ user.username }}</span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'home' %}">Home</a>
                 </li>
-                
-
                 <li class="nav-item">
                     {% if perms.eldercareapp.add_caregiverprofile %}
                         <a class="nav-link btn btn-outline-light" href="{% url 'create_caregiver' %}">Create Caregiver Profile</a>
@@ -37,10 +34,15 @@
                         <a class="nav-link btn btn-outline-light" href="{% url 'create_elder' %}">Create Elder Profile</a>
                     {% endif %}
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a> <!-- ปรับให้เป็น URL logout ของคุณ -->
+                    <a class="nav-link" href="{% url 'appointment_history' %}">ประวัติการจอง</a>
                 </li>
+                
+
                 {% endif %}
             </ul>
         </div>
@@ -48,6 +50,15 @@
 </nav>
 
 <div class="container mt-4">
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% block content %}
     {% endblock %}
 </div>
