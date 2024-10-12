@@ -1,11 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
+
+#get_user_model()
 class ElderProfile(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)  # ทำให้ nullable
     age = models.PositiveIntegerField(null=True, blank=True)  # ทำให้ nullable
     address = models.CharField(max_length=255, null=True, blank=True)  # ทำให้ nullable
     photo = models.ImageField(upload_to='elder/', null=True, blank=True)  # ทำให้ nullable  
-
+    Elder = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
     def __str__(self):
         return self.name
 
@@ -14,7 +23,12 @@ class CaregiverProfile(models.Model):
     experience_years = models.PositiveIntegerField(null=True, blank=True)  # ทำให้ nullable
     bio = models.TextField(null=True, blank=True)  # ทำให้ nullable
     photo = models.ImageField(upload_to='caregiver/', null=True, blank=True)  # ทำให้ nullable  
-
+    Caregiver = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
     def __str__(self):
         return self.name
 

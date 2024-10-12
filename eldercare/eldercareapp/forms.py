@@ -16,15 +16,20 @@ class RegisterForm(UserCreationForm):
         fields = ('username', 'password1', 'password2', 'user_type')
 
 
-# class ElderProfileForm(forms.ModelForm):
-#     class Meta:
-#         model = ElderProfile
-#         fields = ['id','username','phone_number', 'address', 'medical_conditions', 'imageElder']  # เดา
+class ElderProfileForm(forms.ModelForm):
+    class Meta:
+        model = ElderProfile
+        fields = ['id','name','age', 'address', 'photo']  # เดา
 
-# class CaregiverProfileForm(forms.ModelForm):
-#     class Meta:
-#         model = CaregiverProfile
-#         fields = ['id','username','experience', 'phone_number','imageCaregiver']  #เดาๆไว้
+class CaregiverProfileForm(forms.ModelForm):
+    class Meta:
+        model = CaregiverProfile
+        fields = ['id','name','experience_years', 'bio','photo']  
+        
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['bio'].widget = forms.Textarea(attrs={'rows': 4, 'placeholder': 'Write a brief bio...'})
+    #     self.fields['photo'].required = False  # Make the photo optional if you want
 
 # class AppointmentForm(forms.ModelForm):
 #     class Meta:

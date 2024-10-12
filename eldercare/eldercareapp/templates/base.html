@@ -18,12 +18,32 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <span class="navbar-text text-black me-2">I'm, {{ user.username }}</span>  <!-- ใช้ <span> แทน <p> -->
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'home' %}">Home</a>
                 </li>
+                
+
+                <li class="nav-item">
+                    {% if perms.eldercareapp.add_elder_profile %}
+                        <a class="nav-link btn btn-outline-light" href="{% url 'updateelder' %}">Create Elder Profile</a>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item">
+                    {% if perms.eldercareapp.add_caregiver_profile %}
+                        <a class="nav-link btn btn-outline-light" href="{% url 'updatecaregiver' %}">Create Caregiver Profile</a>
+                    {% endif %}
+                </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a> <!-- ปรับให้เป็น URL logout ของคุณ -->
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

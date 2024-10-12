@@ -38,6 +38,7 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request):
         form = AuthenticationForm()
+        
         return render(request, 'login.html', {"form": form})
 
     def post(self, request):
@@ -57,14 +58,98 @@ class HomeView(ListView):
     model = CaregiverProfile
     template_name = 'home.html'
 
+
+class UpdateCaregiver(View):
+    def get(self, request):
+        # Get the caregiver profile for the logged-in user or create a new one
+        caregiver_profile, created = CaregiverProfile.objects.get_or_create(Caregiver=request.user)
+
+        # Instantiate the form with the existing caregiver data
+        form = CaregiverProfileForm(instance=caregiver_profile)
+
+        # Create the context with the form
+        context = {
+            'form': form
+        }
+
+        return render(request, 'createcaregiver.html', context)
+    
+
+    def post(self, request):
+        # Get the caregiver profile for the logged-in user or return a 404 if not found
+        caregiver_profile, created = CaregiverProfile.objects.get_or_create(Caregiver=request.user)
+
+        # Handle the form submission
+        form = CaregiverProfileForm(request.POST, instance=caregiver_profile)
+
+        if form.is_valid():
+            print("Form is valid.")
+            # Save the updated form instance
+            form.save()
+            return redirect('home')  # Redirect to the home page after saving
+        
+        context = {
+            'form': form
+        }
+        return render(request, 'createcaregiver.html', context)
+    
+    
+    
+class UpdateElder(View):
+    def get(self, request):
+        # Get the elder profile for the logged-in user or create a new one
+        elder_profile, created = ElderProfile.objects.get_or_create(elder=request.user)
+
+        # Instantiate the form with the existing elder data
+        form = ElderProfileForm(instance=elder_profile)
+
+        # Create the context with the form
+        context = {
+            'form': form
+        }
+
+        return render(request, 'createelder.html', context)
+    
+
+    def post(self, request):
+        # Get the elder profile for the logged-in user or return a 404 if not found
+        elder_profile, created = ElderProfile.objects.get_or_create(elder=request.user)
+
+        # Handle the form submission
+        form = ElderProfileForm(request.POST, instance=elder_profile)
+
+        if form.is_valid():
+            print("Form is valid.")
+            # Save the updated form instance
+            form.save()
+            return redirect('home')  # Redirect to the home page after saving
+        
+        context = {
+            'form': form
+        }
+        return render(request, 'createelder.html', context)
+
+
+
+class listelder(View):
+    def get(self,request):
+        applist = Appointment.objects.filter(caregiver_id = request.user.id)
+        
+        context={
+            'applist': applist
+        }
+        return render(request, 'listelder.html', context)
+    
+    
+    
 class CaregiverDetailView(DetailView):
     model = CaregiverProfile
     template_name = 'caregiver_detail.html'
 
-    def get_context_data(self, **kwargs):
+    def get(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Assuming you have a way to get the elder user
-        context['elder_appointments'] = Appointment.objects.filter(elder=self.request.user.elderprofile)
+        context['elder_appointments'] = Appointment.objects.all()
         return context
 
 class BookAppointmentView(View):
