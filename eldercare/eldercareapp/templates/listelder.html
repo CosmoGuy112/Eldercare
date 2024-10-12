@@ -1,9 +1,30 @@
-<ul>
-    {% for obj in applist %}
-    <li>{{ obj.elder_id }}</li>
-    <li>{{ obj.location }}</li>
-    <li>{{ obj.status }}</li>
-    <li>{{ obj.appointment_date }}</li>
-    {% endfor %}
-  </ul>
+
+
+  {% extends 'base.html' %}
+
+  {% block content %}
+      <h2>Appointment List</h2>
+      <table class="table table-striped">
+          <thead>
+              <tr>
+                  <th>Elder Name</th>
+                  <th>Caregiver Name</th>
+                  <th>Appointment Date</th>
+                  <th>Location</th>
+                  <th>Status</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for appointment in applist %}
+                  <tr>
+                      <td>{{ appointment.elder }}</td>
+                      <td>{{ appointment.caregiver  }}</td>
+                      <td>{{ appointment.appointment_date|date:"Y-m-d H:i"  }}</td>
+                      <td>{{ appointment.location }}</td>
+                      <td>{{ appointment.status }}</td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  {% endblock %}
   
