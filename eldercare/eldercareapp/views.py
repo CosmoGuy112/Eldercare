@@ -6,6 +6,8 @@ from django.views import View
 from django.contrib.auth import logout, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
+from django.views.generic import ListView, DetailView
+
 
 class RegisterView(View):
     def get(self, request):
@@ -37,74 +39,39 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
+    
+    
+class HomeView(ListView):
+    model = CaregiverProfile
+    template_name = 'home.html'
 
-class CreateAppointmentView(LoginRequiredMixin, View):
-    login_url = 'login'  
+class CaregiverDetailView(DetailView):
+    model = CaregiverProfile
+    template_name = 'caregiver_detail.html'
 
-    def get(self, request):
-        form = AppointmentForm()
-        context ={
-            'form':form
-        }
-        return render(request, 'create_appointment.html',context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Assuming you have a way to get the elder user
+        context['elder_appointments'] = Appointment.objects.filter(elder=self.request.user.elderprofile)
+        return context
 
-    def post(self, request):
-        form = AppointmentForm(request.POST)
-        if form.is_valid():
-            # Save the appointment object to the database
-            appointment = form.save(commit=False)
-            appointment.user = request.user  # Assign the current user to the appointment
-            appointment.save()
-            
-            # Optionally, add a success message
-            print("Appointment created successfully.")
-            return redirect('appointment_list')
-        else:
-            print("fail.")
-            # If the form is not valid, render the form again with errors
-            context = {
-                'form': form
-            }
-            return render(request, 'create_appointment.html', context)
-
-class AppointmentListView(LoginRequiredMixin, View):
-    def get(self, request):
-        appointments = Appointment.objects.all()
-        # if hasattr(request.user, 'elderprofile'):
-        #     appointments = Appointment.objects.filter(elder=request.user.elderprofile)
-        # elif hasattr(request.user, 'caregiverprofile'):
-        #     appointments = Appointment.objects.filter(caregiver=request.user.caregiverprofile)
-        
-        
-        return render(request, 'appointment_list.html', {'appointments': appointments})
-
-class ElderProfileView(LoginRequiredMixin, View):
-    login_url = 'login'
-
-    def get(self, request, elder_id):
-        elder = get_object_or_404(ElderProfile, pk=elder_id)
-        form = ElderProfileForm(instance=elder) 
-        return render(request, 'elder_profile.html', {'elder': elder, 'form': form})
-
-    def post(self, request, elder_id):
-        elder = get_object_or_404(ElderProfile, pk=elder_id)
-        form = ElderProfileForm(request.POST, request.FILES, instance=elder) 
-        if form.is_valid():
-            form.save()  
-            return redirect('elder_profile', elder.id)  
-        return render(request, 'elder_profile.html', {'elder': elder, 'form': form})  
-class CaregiverProfileView(LoginRequiredMixin, View):
-    login_url = 'login'  
-
-    def get(self, request, caregiver_id):
-        caregiver = get_object_or_404(CaregiverProfile, pk=caregiver_id)
-        form = CaregiverProfileForm(instance=caregiver)  
-        return render(request, 'caregiver_profile.html', {'caregiver': caregiver, 'form': form})
-
+class BookAppointmentView(View):
     def post(self, request, caregiver_id):
-        caregiver = get_object_or_404(CaregiverProfile, pk=caregiver_id)
-        form = CaregiverProfileForm(request.POST, request.FILES, instance=caregiver)  
-        if form.is_valid():
-            form.save()  
-            return redirect('caregiver_profile', caregiver.id) 
-        return render(request, 'caregiver_profile.html', {'caregiver': caregiver, 'form': form})  
+        appointment_date = request.POST['appointment_date']
+        caregiver = get_object_or_404(CaregiverProfile, id=caregiver_id)
+        # Create appointment here, assuming you have the elder information
+        Appointment.objects.create(
+            elder=request.user.elderprofile,
+            caregiver=caregiver,
+            appointment_date=appointment_date,
+            location='Hospital Phyathai',  # replace with actual location if needed
+            status='scheduled'
+        )
+        return redirect('caregiver_detail', pk=caregiver_id)
+
+class UpdateStatusView(View):
+    def post(self, request, appointment_id):
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        appointment.status = request.POST['status']
+        appointment.save()
+        return redirect('caregiver_detail', pk=appointment.caregiver.id)

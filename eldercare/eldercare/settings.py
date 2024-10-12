@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_NAME'),
         'USER': os.getenv('POSTGRES_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # เปลี่ยน 'db' เป็น 'localhost'
+        'HOST': 'localhost', # เปลี่ยน 'db' เป็น 'localhost'
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
