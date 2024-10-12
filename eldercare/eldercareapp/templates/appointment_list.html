@@ -17,12 +17,13 @@
                 <td>{{ appointment.location }}</td>
                 <td>{{ appointment.price }}</td>
                 <td>{{ appointment.status }}</td>
-                <td>{% if appointment.caregiver %}{{ appointment.caregiver.user.username }}{% endif %}</td>
+                <td>{{ appointment.caregiver }}</td>
+                {% comment %} <td>{% if appointment.caregiver %}{{ appointment.caregiver.user.username }}{% endif %}</td>
                 
                 <td><a href="{% url 'caregiver_profile' appointment.caregiver.id %}">
                     {% if appointment.caregiver %}{{ appointment.caregiver.user.username }}{% else %} - {% endif %}
                   </a>
-                </td>
+                </td> {% endcomment %}
                 <!-- ... (add other actions like accept/reject/complete) ... -->
                 
             </tr>

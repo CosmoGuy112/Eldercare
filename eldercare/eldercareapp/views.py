@@ -42,19 +42,40 @@ class CreateAppointmentView(LoginRequiredMixin, View):
     login_url = 'login'  
 
     def get(self, request):
-        return render(request, 'create_appointment.html')
+        form = AppointmentForm()
+        context ={
+            'form':form
+        }
+        return render(request, 'create_appointment.html',context)
 
     def post(self, request):
-        # ... (process form data and create Appointment object)
-        return redirect('appointment_list')
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            # Save the appointment object to the database
+            appointment = form.save(commit=False)
+            appointment.user = request.user  # Assign the current user to the appointment
+            appointment.save()
+            
+            # Optionally, add a success message
+            print("Appointment created successfully.")
+            return redirect('appointment_list')
+        else:
+            print("fail.")
+            # If the form is not valid, render the form again with errors
+            context = {
+                'form': form
+            }
+            return render(request, 'create_appointment.html', context)
 
 class AppointmentListView(LoginRequiredMixin, View):
     def get(self, request):
-        appointments = []
-        if hasattr(request.user, 'elderprofile'):
-            appointments = Appointment.objects.filter(elder=request.user.elderprofile)
-        elif hasattr(request.user, 'caregiverprofile'):
-            appointments = Appointment.objects.filter(caregiver=request.user.caregiverprofile)
+        appointments = Appointment.objects.all()
+        # if hasattr(request.user, 'elderprofile'):
+        #     appointments = Appointment.objects.filter(elder=request.user.elderprofile)
+        # elif hasattr(request.user, 'caregiverprofile'):
+        #     appointments = Appointment.objects.filter(caregiver=request.user.caregiverprofile)
+        
+        
         return render(request, 'appointment_list.html', {'appointments': appointments})
 
 class ElderProfileView(LoginRequiredMixin, View):
