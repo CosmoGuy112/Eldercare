@@ -29,10 +29,14 @@
 
                 <li class="nav-item">
                     {% if perms.eldercareapp.add_caregiverprofile %}
-                        <a class="nav-link btn btn-outline-light" href="{% url 'updatecaregiver' %}">Create Caregiver Profile</a>
+                        <a class="nav-link btn btn-outline-light" href="{% url 'create_caregiver' %}">Create Caregiver Profile</a>
                     {% endif %}
                 </li>
-
+                <li class="nav-item">
+                    {% if perms.eldercareapp.add_elderprofile %}
+                        <a class="nav-link btn btn-outline-light" href="{% url 'create_elder' %}">Create Elder Profile</a>
+                    {% endif %}
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a> <!-- ปรับให้เป็น URL logout ของคุณ -->
