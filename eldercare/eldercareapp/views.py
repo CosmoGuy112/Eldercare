@@ -165,20 +165,24 @@ class BookAppointmentView(View):
         appointment_date = request.POST['appointment_date']
         location = request.POST['location']
         caregiver = get_object_or_404(CaregiverProfile, id=caregiver_id)
-        
+
+        # ตรวจสอบว่า ElderProfile มีอยู่
+        elder_profile = ElderProfile.objects.filter(elder=request.user).first()
+        if not elder_profile:
+            # ส่งผู้ใช้ไปยังหน้า Create ElderProfile
+            return redirect('create_elder_profile')
+
+        # สร้างการจอง
         appointment = Appointment.objects.create(
-            elder=request.user.elderprofile,
+            elder=elder_profile,
             caregiver=caregiver,
             appointment_date=appointment_date,
             location=location,
             status='scheduled'
         )
-
-        # ส่งอีเมลหรือการแจ้งเตือนให้ caregiver (ถ้าต้องการ)
-        # send_email_to_caregiver(caregiver, appointment)
-
         return redirect('caregiver_detail', pk=caregiver_id)
 
+    
 class UpdateStatusView(View):
     def post(self, request, appointment_id):
         appointment = get_object_or_404(Appointment, id=appointment_id)
@@ -198,7 +202,6 @@ class CreateElderProfileView(LoginRequiredMixin, UserPassesTestMixin, CreateView
 
     def test_func(self):
         return self.request.user.groups.filter(name='Elder').exists()
-
 class MyProfileView(LoginRequiredMixin, View):
     login_url = '/auth/login/'
 

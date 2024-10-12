@@ -9,7 +9,7 @@ urlpatterns = [
     path('create_caregiver/', views.UpdateCaregiver.as_view(), name='create_caregiver'),
     path('create_elder/', views.UpdateElder.as_view(), name='create_elder'),
     path('myprofile/', views.MyProfileView.as_view(), name='myprofile'),
-    path('create_elder_profile/', views.CreateElderProfileView.as_view(), name='create_elder_profile'),
+    path('create_elder_profile/', views.CreateElderProfileView.as_view(), name='create_elder_profile'),  # เพิ่ม URL สำหรับสร้าง ElderProfile
     path('listelder/', views.listelder.as_view(), name='listelder'),
 
     # เพิ่ม URL สำหรับ Caregiver Detail และ Booking
