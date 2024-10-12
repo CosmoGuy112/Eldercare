@@ -16,6 +16,25 @@ class RegisterForm(UserCreationForm):
         fields = ('username', 'password1', 'password2', 'user_type')
 
 
+class ElderProfileForm(forms.ModelForm):
+    class Meta:
+        model = ElderProfile
+        fields = ['name', 'age', 'address', 'photo']
+        widgets = {
+            'age': forms.NumberInput(attrs={'min': 0}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('age') is not None and cleaned_data['age'] < 0:
+            raise forms.ValidationError("อายุต้องไม่เป็นค่าลบ")
+        return cleaned_data
+    
+class ElderProfileForm(forms.ModelForm):
+    class Meta:
+        model = ElderProfile
+        fields = ['name', 'age', 'address', 'photo']
+
 # class ElderProfileForm(forms.ModelForm):
 #     class Meta:
 #         model = ElderProfile
