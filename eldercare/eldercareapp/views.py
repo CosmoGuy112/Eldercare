@@ -105,7 +105,7 @@ class UpdateCaregiver(View):
 class UpdateElder(View):
     def get(self, request):
         # Get the elder profile for the logged-in user or create a new one
-        elder_profile, created = ElderProfile.objects.get_or_create(Elder=request.user)
+        elder_profile, created = ElderProfile.objects.get_or_create(elder=request.user)
 
         # Instantiate the form with the existing elder data
         form = ElderProfileForm(instance=elder_profile)
@@ -120,7 +120,7 @@ class UpdateElder(View):
 
     def post(self, request):
         # Get the elder profile for the logged-in user or return a 404 if not found
-        elder_profile, created = ElderProfile.objects.get_or_create(Elder=request.user)
+        elder_profile, created = ElderProfile.objects.get_or_create(elder=request.user)
 
         # Handle the form submission
         form = ElderProfileForm(request.POST, instance=elder_profile)
