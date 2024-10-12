@@ -1,14 +1,16 @@
+from typing import Any
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404,HttpResponse
 from .models import *
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.contrib.auth import logout, login
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from .forms import *
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView,CreateView
 from django.contrib.auth.models import Group
-
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse_lazy
 
 class RegisterView(View):
     def get(self, request):
@@ -32,7 +34,7 @@ class RegisterView(View):
                 return render(request, 'register.html', {'form': form})
 
             login(request, user)
-            return redirect('home')  
+            return redirect('create_elder_profile')  
         return render(request, 'register.html', {'form': form})
 
 class LoginView(View):
@@ -57,6 +59,10 @@ class LogoutView(View):
 class HomeView(ListView):
     model = CaregiverProfile
     template_name = 'home.html'
+    context_object_name = 'caregivers'  # ตั้งชื่อ context สำหรับเทมเพลต
+
+    def get_queryset(self):
+        return CaregiverProfile.objects.all()  # แสดง caregiver ทั้งหมด
 
 
 class UpdateCaregiver(View):
@@ -172,3 +178,35 @@ class UpdateStatusView(View):
         appointment.status = request.POST['status']
         appointment.save()
         return redirect('caregiver_detail', pk=appointment.caregiver.id)
+
+class CreateElderProfileView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = ElderProfile
+    form_class = ElderProfileForm
+    template_name = 'create_elder_profile.html'
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.instance.elder = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='Elder').exists()
+
+class MyProfileView(LoginRequiredMixin, View):
+    login_url = '/auth/login/'
+
+    def get(self, request):
+        try:
+            profile = ElderProfile.objects.get(elder=request.user)
+            form = ElderProfileForm(instance=profile)
+        except ObjectDoesNotExist:
+            return HttpResponse("<h1>ไม่พบโปรไฟล์ของคุณ</h1>")
+        return render(request, "myprofile.html", {'form': form})
+
+    def post(self, request):
+        profile = get_object_or_404(ElderProfile, elder=request.user)
+        form = ElderProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        return render(request, "myprofile.html", {"form": form})

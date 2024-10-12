@@ -1,5 +1,6 @@
-{% extends 'base.html' %}
 
+{% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <h1>Caregiver List</h1>
 <div class="container">
@@ -7,7 +8,11 @@
         {% for caregiver in caregivers %}
         <div class="col-md-4">
             <div class="card">
-                <img src="{{ caregiver.photo.url }}" class="card-img-top" alt="{{ caregiver.name }}">
+                {% if caregiver.photo %}
+                    <img src="{{ caregiver.photo.url }}" class="card-img-top" alt="{{ caregiver.name }}">
+                {% else %}
+                    <img src="{% static 'path/to/default/image.jpg' %}" class="card-img-top" alt="Default Image">  <!-- เปลี่ยนเป็น path ที่ถูกต้อง -->
+                {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ caregiver.name }}</h5>
                     <p class="card-text">Experience: {{ caregiver.experience_years }} years</p>
