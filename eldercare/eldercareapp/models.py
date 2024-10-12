@@ -6,14 +6,14 @@ class ElderProfile(models.Model):
     age = models.PositiveIntegerField(null=True, blank=True)  # ทำให้ nullable
     address = models.CharField(max_length=255, null=True, blank=True)  # ทำให้ nullable
     photo = models.ImageField(upload_to='elder/', null=True, blank=True)  # ทำให้ nullable  
-    elder = models.ForeignKey(
+    elder = models.OneToOneField(
         User,
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True
     )
     def __str__(self):
-        return self.name or "Unnamed Elder"
+        return self.name 
 
 
 class CaregiverProfile(models.Model):
@@ -21,7 +21,7 @@ class CaregiverProfile(models.Model):
     experience_years = models.PositiveIntegerField(null=True, blank=True)  # ทำให้ nullable
     bio = models.TextField(null=True, blank=True)  # ทำให้ nullable
     photo = models.ImageField(upload_to='caregiver/', null=True, blank=True)  # ทำให้ nullable  
-    Caregiver = models.ForeignKey(
+    Caregiver = models.OneToOneField(
         User,
         on_delete=models.SET_NULL, 
         null=True, 
@@ -38,4 +38,4 @@ class Appointment(models.Model):
     status = models.CharField(max_length=20, choices=[('scheduled', 'Scheduled'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], null=True, blank=True)  # ทำให้ nullable
 
     def __str__(self):
-        return f"Appointment for {self.elder.name} with {self.caregiver.name if self.caregiver else 'Unassigned'} on {self.appointment_date}"
+        return f"Appointment for {self.elder.name} with {self.caregiver.name} on {self.appointment_date}"
