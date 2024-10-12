@@ -87,7 +87,7 @@ class UpdateCaregiver(View):
         caregiver_profile, created = CaregiverProfile.objects.get_or_create(Caregiver=request.user)
 
         # Handle the form submission
-        form = CaregiverProfileForm(request.POST, instance=caregiver_profile)
+        form = CaregiverProfileForm(request.POST, request.FILES, instance=caregiver_profile)
 
         if form.is_valid():
             print("Form is valid.")
@@ -123,7 +123,7 @@ class UpdateElder(View):
         elder_profile, created = ElderProfile.objects.get_or_create(elder=request.user)
 
         # Handle the form submission
-        form = ElderProfileForm(request.POST, instance=elder_profile)
+        form = ElderProfileForm(request.POST, request.FILES, instance=elder_profile)
 
         if form.is_valid():
             print("Form is valid.")
@@ -202,6 +202,7 @@ class CreateElderProfileView(LoginRequiredMixin, UserPassesTestMixin, CreateView
 
     def test_func(self):
         return self.request.user.groups.filter(name='Elder').exists()
+
 class MyProfileView(LoginRequiredMixin, View):
     login_url = '/auth/login/'
 
