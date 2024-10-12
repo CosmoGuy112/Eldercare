@@ -142,14 +142,34 @@ class UpdateElder(View):
 
 
 class listelder(View):
-    def get(self,request):
-        applist = Appointment.objects.filter(caregiver_id = request.user.id)
+    def get(self, request):
+        applist = Appointment.objects.filter(caregiver_id=request.user.id)
+        print(request.user.id)
+        print(applist)
         
-        context={
+        context = {
             'applist': applist
         }
         return render(request, 'listelder.html', context)
-    
+
+    def post(self, request):
+        appointment_id = request.POST.get("appointment_id")
+        new_status = request.POST.get(f"status_{appointment_id}")
+        
+        if appointment_id and new_status:
+            try:
+                # Update the appointment status in the database
+                appointment = Appointment.objects.get(id=appointment_id)
+                appointment.status = new_status
+                appointment.save()
+
+                # Redirect back to the appointment list view
+                return redirect('listelder')
+            except Appointment.DoesNotExist:
+                # Handle the case where the appointment doesn't exist
+                return render(request, 'listelder.html', {'error': 'Appointment not found.'})
+        
+        return redirect('listelder')  # Default fallback to the list page
     
     
 class CaregiverDetailView(DetailView):
