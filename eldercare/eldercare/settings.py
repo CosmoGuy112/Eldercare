@@ -84,8 +84,8 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_NAME'),
         'USER': os.getenv('POSTGRES_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'localhost',  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'HOST': 'localhost', # เปลี่ยน 'db' เป็น 'localhost'
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -130,9 +130,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",  
+# ]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

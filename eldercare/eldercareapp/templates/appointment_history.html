@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>ประวัติการจอง</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>วันที่จอง</th>
+            <th>สถานที่</th>
+            <th>Caregiver</th>
+            <th>สถานะ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for appointment in appointments %}
+        <tr>
+            <td>{{ appointment.appointment_date }}</td>
+            <td>{{ appointment.location }}</td>
+            <td>{{ appointment.caregiver.name }}</td> <!-- แสดงชื่อ Caregiver -->
+            <td>{{ appointment.status }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">ยังไม่มีการจอง</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

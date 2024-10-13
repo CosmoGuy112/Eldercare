@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Appointment List</h2>
+    <form method="POST" action="{% url 'listelder' %}">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Elder Name</th>
+                    <th>Caregiver Name</th>
+                    <th>Appointment Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in applist %}
+                    <tr>
+                        <td>{{ appointment.elder }}</td>
+                        <td>{{ appointment.caregiver }}</td>
+                        <td>{{ appointment.appointment_date|date:"Y-m-d H:i" }}</td>
+                        <td>{{ appointment.location }}</td>
+                        <td>
+                            <select name="status_{{ appointment.id }}">
+                                <option value="Pending" {% if appointment.status == 'scheduled' %}selected{% endif %}>scheduled</option>
+                                <option value="Confirmed" {% if appointment.status == 'completed' %}selected{% endif %}>completed</option>
+                                <option value="Completed" {% if appointment.status == 'cancelled' %}selected{% endif %}>cancelled</option>
+                            </select>
+                        </td>
+                        
+                        <td>
+                            <button type="submit" name="appointment_id" value="{{ appointment.id }}">Update Status</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+{% endblock %}
