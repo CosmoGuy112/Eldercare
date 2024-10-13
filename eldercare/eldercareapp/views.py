@@ -144,8 +144,7 @@ class UpdateElder(View):
 class listelder(View):
     def get(self, request):
         applist = Appointment.objects.filter(caregiver_id=request.user.id)
-        print(request.user.id)
-        print(applist)
+        
         
         context = {
             'applist': applist
