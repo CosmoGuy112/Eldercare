@@ -55,7 +55,7 @@ class LoginView(View):
             if user.groups.filter(name='Caregiver').exists():
                 return redirect('listelder')  # ถ้าเป็น Caregiver ไปหน้า listelder
             else:
-                return redirect('home')  # ถ้าเป็น Elder ไปหน้า home
+                return redirect('create_elder')  # ถ้าเป็น Elder ไปหน้า home
         
         return render(request, 'login.html', {"form": form})
 
