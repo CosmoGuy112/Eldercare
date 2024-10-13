@@ -1,41 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Appointment List</h2>
-    <form method="POST" action="{% url 'listelder' %}">
-        {% csrf_token %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Elder Name</th>
-                    <th>Caregiver Name</th>
-                    <th>Appointment Date</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in applist %}
-                    <tr>
-                        <td>{{ appointment.elder }}</td>
-                        <td>{{ appointment.caregiver }}</td>
-                        <td>{{ appointment.appointment_date|date:"Y-m-d H:i" }}</td>
-                        <td>{{ appointment.location }}</td>
-                        <td>
-                            <select name="status_{{ appointment.id }}">
-                                <option value="Pending" {% if appointment.status == 'scheduled' %}selected{% endif %}>scheduled</option>
-                                <option value="Confirmed" {% if appointment.status == 'completed' %}selected{% endif %}>completed</option>
-                                <option value="Completed" {% if appointment.status == 'cancelled' %}selected{% endif %}>cancelled</option>
-                            </select>
-                        </td>
-                        
-                        <td>
-                            <button type="submit" name="appointment_id" value="{{ appointment.id }}">Update Status</button>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </form>
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-primary">รายการนัดหมาย</h2>
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="POST" action="{% url 'listelder' %}">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="h5">ชื่อผู้สูงอายุ</th>
+                                <th class="h5">ชื่อผู้ดูแล</th>
+                                <th class="h5">วันที่นัดหมาย</th>
+                                <th class="h5">สถานที่</th>
+                                <th class="h5">สถานะ</th>
+                                <th class="h5">การดำเนินการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in applist %}
+                                <tr>
+                                    <td class="align-middle">{{ appointment.elder }}</td>
+                                    <td class="align-middle">{{ appointment.caregiver }}</td>
+                                    <td class="align-middle">{{ appointment.appointment_date|date:"d/m/Y H:i" }}</td>
+                                    <td class="align-middle">{{ appointment.location }}</td>
+                                    <td class="align-middle">
+                                        <select name="status_{{ appointment.id }}" class="form-select">
+                                            <option value="scheduled" {% if appointment.status == 'scheduled' %}selected{% endif %}>นัดหมาย</option>
+                                            <option value="completed" {% if appointment.status == 'completed' %}selected{% endif %}>เสร็จสิ้น</option>
+                                            <option value="cancelled" {% if appointment.status == 'cancelled' %}selected{% endif %}>ยกเลิก</option>
+                                        </select>
+                                    </td>
+                                    <td class="align-middle">
+                                        <button type="submit" name="appointment_id" value="{{ appointment.id }}" class="btn btn-primary">อัพเดทสถานะ</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
