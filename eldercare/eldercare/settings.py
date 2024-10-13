@@ -77,21 +77,18 @@ WSGI_APPLICATION = 'eldercare.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 load_dotenv()
 
+# from decouple import config
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_NAME'),
         'USER': os.getenv('POSTGRES_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-<<<<<<< HEAD
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # เปลี่ยน 'db' เป็น 'localhost'
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
-=======
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT', 5432),
->>>>>>> a0cea5bdc6278dbfe29e8dbb2e5b2092b5b7797a
+        'HOST': 'localhost',  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
+
 
 # print("POSTGRES_NAME:", os.getenv('POSTGRES_NAME'))
 # print("POSTGRES_USER:", os.getenv('POSTGRES_user'))
