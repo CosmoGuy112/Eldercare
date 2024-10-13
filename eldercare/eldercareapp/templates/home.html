@@ -9,10 +9,11 @@
         <div class="col-md-4">
             <div class="card">
                 {% if caregiver.photo %}
-                    <img src="{{ caregiver.photo.url }}" class="card-img-top" alt="{{ caregiver.name }}">
+                    <img src="{{ caregiver.photo.url }}" class="card-img-top" alt="{{ caregiver.name }}" style="width: 200px; height: 200px; object-fit: cover;">
                 {% else %}
-                    <img src="{% static 'path/to/default/image.jpg' %}" class="card-img-top" alt="Default Image">  <!-- เปลี่ยนเป็น path ที่ถูกต้อง -->
+                    <img src="{% static 'path/to/default/image.jpg' %}" class="card-img-top" alt="Default Image" style="width: 200px; height: 200px; object-fit: cover;">
                 {% endif %}
+
                 <div class="card-body">
                     <h5 class="card-title">{{ caregiver.name }}</h5>
                     <p class="card-text">Experience: {{ caregiver.experience_years }} years</p>

@@ -5,10 +5,11 @@
 <h1>{{ caregiver.name }}</h1>
 
 {% if caregiver.photo %}
-    <img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}">
+    <img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}" class="fixed-image-size">
 {% else %}
-    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image">
+    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image" class="fixed-image-size">
 {% endif %}
+
 
 <p>Experience: {{ caregiver.experience_years }} years</p>
 <p>Bio: {{ caregiver.bio }}</p>

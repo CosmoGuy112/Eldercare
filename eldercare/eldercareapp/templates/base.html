@@ -21,19 +21,27 @@
                 <li class="nav-item">
                     <span class="navbar-text text-black me-2">I'm, {{ user.username }}</span>
                 </li>
+                {% if perms.eldercareapp.add_caregiverprofile %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-light" href="{% url 'listelder' %}">Your care</a>
+            </li>
+
+                <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light" href="{% url 'create_caregiver' %}">Create Caregiver Profile</a>
+                </li>
+
+                {% endif %}
+                {% if perms.eldercareapp.add_elderprofile %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'home' %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    {% if perms.eldercareapp.add_caregiverprofile %}
-                        <a class="nav-link btn btn-outline-light" href="{% url 'create_caregiver' %}">Create Caregiver Profile</a>
-                    {% endif %}
-                </li>
-                <li class="nav-item">
-                    {% if perms.eldercareapp.add_elderprofile %}
+                    
+                    
                         <a class="nav-link btn btn-outline-light" href="{% url 'create_elder' %}">Create Elder Profile</a>
-                    {% endif %}
+                    
                 </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
