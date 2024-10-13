@@ -102,12 +102,12 @@ class UpdateCaregiver(View):
             print("Form is valid.")
             # Save the updated form instance
             form.save()
-            return redirect('home')  # Redirect to the home page after saving
+            return redirect('listelder')  # Redirect to the home page after saving
         
         context = {
             'form': form
         }
-        return render(request, 'listelder.html', context)
+        return render(request, 'createcaregiver.html', context)
     
     
     
