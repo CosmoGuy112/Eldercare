@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,18 +75,26 @@ WSGI_APPLICATION = 'eldercare.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+load_dotenv()
 
+# from decouple import config
 DATABASES = {
-     'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
+        'USER': os.getenv('POSTGRES_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('POSTGRES_HOST'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
         'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
 
+
+# print("POSTGRES_NAME:", os.getenv('POSTGRES_NAME'))
+# print("POSTGRES_USER:", os.getenv('POSTGRES_user'))
+# print("POSTGRES_PASSWORD:", os.getenv('POSTGRES_PASSWORD'))
+# print("POSTGRES_HOST:", os.getenv('POSTGRES_HOST'))
+# print("POSTGRES_PORT:", os.getenv('POSTGRES_PORT'))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -121,9 +130,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",  
+# ]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

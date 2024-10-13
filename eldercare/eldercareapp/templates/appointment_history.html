@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+                    <h1 class="text-center mb-4 text-primary">ประวัติการจอง</h1>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="h5">วันที่จอง</th>
+                                    <th scope="col" class="h5">สถานที่</th>
+                                    <th scope="col" class="h5">Caregiver</th>
+                                    <th scope="col" class="h5">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td class="align-middle">{{ appointment.appointment_date|date:"d/m/Y H:i" }}</td>
+                                    <td class="align-middle">{{ appointment.location }}</td>
+                                    <td class="align-middle">{{ appointment.caregiver.name }}</td>
+                                    <td class="align-middle">
+                                        <span class="badge rounded-pill 
+                                            {% if appointment.status == 'scheduled' %}bg-primary
+                                            {% elif appointment.status == 'completed' %}bg-success
+                                            {% elif appointment.status == 'cancelled' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ appointment.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">ยังไม่มีการจอง</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f8ff;
+        font-size: 18px;
+    }
+    .card {
+        border-radius: 15px;
+        background-color: #ffffff;
+    }
+    .table {
+        font-size: 1.1rem;
+    }
+    .table th {
+        background-color: #e6f2ff;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .text-primary {
+        color: #4682B4 !important;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 0.75em;
+    }
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}

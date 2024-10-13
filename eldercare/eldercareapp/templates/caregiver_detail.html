@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>{{ caregiver.name }}</h1>
+
+{% if caregiver.photo %}
+    <img src="{{ caregiver.photo.url }}" alt="{{ caregiver.name }}" class="fixed-image-size">
+{% else %}
+    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image" class="fixed-image-size">
+{% endif %}
+
+
+<p>Experience: {{ caregiver.experience_years }} years</p>
+<p>Bio: {{ caregiver.bio }}</p>
+
+
+<h3>Book an Appointment</h3>
+<form method="POST" action="{% url 'book_appointment' caregiver.id %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="appointment_date" class="form-label">Select Date</label>
+        <input type="date" name="appointment_date" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" name="location" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Confirm Booking</button>
+</form>
+
+{% endblock %}
