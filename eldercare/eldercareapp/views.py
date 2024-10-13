@@ -107,7 +107,7 @@ class UpdateCaregiver(View):
         context = {
             'form': form
         }
-        return render(request, 'createcaregiver.html', context)
+        return render(request, 'listelder.html', context)
     
     
     
@@ -240,24 +240,7 @@ class CreateElderProfileView(LoginRequiredMixin, UserPassesTestMixin, CreateView
     def test_func(self):
         return self.request.user.groups.filter(name='Elder').exists()
 
-class MyProfileView(LoginRequiredMixin, View):
-    login_url = '/auth/login/'
 
-    def get(self, request):
-        try:
-            profile = ElderProfile.objects.get(elder=request.user)
-            form = ElderProfileForm(instance=profile)
-        except ObjectDoesNotExist:
-            return HttpResponse("<h1>ไม่พบโปรไฟล์ของคุณ</h1>")
-        return render(request, "myprofile.html", {'form': form})
-
-    def post(self, request):
-        profile = get_object_or_404(ElderProfile, elder=request.user)
-        form = ElderProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        return render(request, "myprofile.html", {"form": form})
     
 
 class AppointmentHistoryView(LoginRequiredMixin, View):
