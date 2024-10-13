@@ -77,6 +77,7 @@ WSGI_APPLICATION = 'eldercare.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 load_dotenv()
 
+# from decouple import config
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -87,6 +88,7 @@ DATABASES = {
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
+
 
 # print("POSTGRES_NAME:", os.getenv('POSTGRES_NAME'))
 # print("POSTGRES_USER:", os.getenv('POSTGRES_user'))
