@@ -43,7 +43,6 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request):
         form = AuthenticationForm()
-        
         return render(request, 'login.html', {"form": form})
 
     def post(self, request):
@@ -51,7 +50,13 @@ class LoginView(View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+
+            # ตรวจสอบกลุ่มของผู้ใช้
+            if user.groups.filter(name='Caregiver').exists():
+                return redirect('listelder')  # ถ้าเป็น Caregiver ไปหน้า listelder
+            else:
+                return redirect('home')  # ถ้าเป็น Elder ไปหน้า home
+        
         return render(request, 'login.html', {"form": form})
 
 class LogoutView(View):
@@ -59,15 +64,16 @@ class LogoutView(View):
         logout(request)
         return redirect('login')
 
-class HomeView(LoginRequiredMixin,ListView):
+class HomeView(LoginRequiredMixin, ListView):
     login_url = '/login/'
     model = CaregiverProfile
     template_name = 'home.html'
-    context_object_name = 'caregivers'  # ตั้งชื่อ context สำหรับเทมเพลต
+    context_object_name = 'caregivers'
 
-    def get_queryset(self):
-        return CaregiverProfile.objects.all()  # แสดง caregiver ทั้งหมด
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_caregiver'] = self.request.user.groups.filter(name='Caregiver').exists()
+        return context
 
 class UpdateCaregiver(View):
     def get(self, request):
@@ -141,13 +147,14 @@ class UpdateElder(View):
 
 
 
-class listelder(View):
+class ListElderView(LoginRequiredMixin, View):
     def get(self, request):
         applist = Appointment.objects.filter(caregiver_id=request.user.id)
-        
+        is_caregiver = request.user.groups.filter(name='Caregiver').exists()
         
         context = {
-            'applist': applist
+            'applist': applist,
+            'is_caregiver': is_caregiver,
         }
         return render(request, 'listelder.html', context)
 
