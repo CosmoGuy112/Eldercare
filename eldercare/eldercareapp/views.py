@@ -150,9 +150,11 @@ class UpdateElder(View):
 class ListElderView(LoginRequiredMixin, View):
     def get(self, request):
         applist = Appointment.objects.filter(caregiver_id=request.user.id)
+        elder = ElderProfile.objects.all()
         is_caregiver = request.user.groups.filter(name='Caregiver').exists()
         
         context = {
+            'elderall': elder,
             'applist': applist,
             'is_caregiver': is_caregiver,
         }
@@ -178,6 +180,20 @@ class ListElderView(LoginRequiredMixin, View):
         return redirect('listelder')  # Default fallback to the list page
     
     
+class Elderdetail(View):
+    def get(self, request,pk):
+        eldernew = ElderProfile.objects.all()
+        elder = ElderProfile.objects.filter(id=pk)
+        print(elder)
+        
+        context = {
+            'elderall': elder,
+            'eldernew': eldernew
+        }
+        return render(request, 'elderdetail.html', context)
+
+    
+
 class CaregiverDetailView(DetailView):
     model = CaregiverProfile
     template_name = 'caregiver_detail.html'
