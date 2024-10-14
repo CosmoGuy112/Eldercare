@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'eldercare.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
