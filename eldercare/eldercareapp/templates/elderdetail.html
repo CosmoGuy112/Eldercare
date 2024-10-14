@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+        .elder-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .elder-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .elder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .elder-card img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .elder-card p {
+            margin: 10px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .elder-card p.name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .elder-card p.age {
+            color: #888;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="elder-container">
+            {% for elder in elderall %}
+                <div class="elder-card">
+                    {% if elder.photo %}
+                        <img src="{{ elder.photo.url }}" alt="{{ elder.name }}'s photo">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="No photo available">
+                    {% endif %}
+                    <p class="name">{{ elder.name }}</p>
+                    <p class="age">Age: {{ elder.age }}</p>
+                    {% comment %} <p>{{ elder.address }}</p> {% endcomment %}
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+
+    <!-- ปุ่มย้อนกลับ -->
+    <a href="javascript:history.back()" class="back-button">ย้อนกลับ</a>
+{% endblock %}

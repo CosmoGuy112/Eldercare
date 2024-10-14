@@ -11,6 +11,7 @@ urlpatterns = [
     
     path('create_elder_profile/', views.CreateElderProfileView.as_view(), name='create_elder_profile'),  # หน้าเพิ่มโปรไฟล์ Elder
     path('listelder/', views.ListElderView.as_view(), name='listelder'),  # หน้าแสดงรายการ Elder
+    path('elderdetail/<int:pk>/', views.Elderdetail.as_view(), name='elderdetail'),  # หน้าแสดงรายการ Elder
 
     # เพิ่ม URL สำหรับ Caregiver Detail และ Booking
     path('caregiver/<int:pk>/', views.CaregiverDetailView.as_view(), name='caregiver_detail'),  # URL สำหรับดูรายละเอียด

@@ -12,10 +12,12 @@
                         <thead class="bg-light">
                             <tr>
                                 <th class="h5">ชื่อผู้สูงอายุ</th>
-                                <th class="h5">ชื่อผู้ดูแล</th>
+                                
                                 <th class="h5">วันที่นัดหมาย</th>
                                 <th class="h5">สถานที่</th>
+                                <th class="h5">ข้อมูลผู้สูงอายุ</th>
                                 <th class="h5">สถานะ</th>
+                                
                                 <th class="h5">การดำเนินการ</th>
                             </tr>
                         </thead>
@@ -23,9 +25,12 @@
                             {% for appointment in applist %}
                                 <tr>
                                     <td class="align-middle">{{ appointment.elder }}</td>
-                                    <td class="align-middle">{{ appointment.caregiver }}</td>
+                                    
                                     <td class="align-middle">{{ appointment.appointment_date|date:"d/m/Y H:i" }}</td>
                                     <td class="align-middle">{{ appointment.location }}</td>
+                                    <td class="align-middle"><a href="{% url 'elderdetail' appointment.elder.id %}" 
+                                        class="btn btn-primary">ดูข้อมูล
+                                    </a></td>
                                     <td class="align-middle">
                                         <select name="status_{{ appointment.id }}" class="form-select">
                                             <option value="scheduled" {% if appointment.status == 'scheduled' %}selected{% endif %}>นัดหมาย</option>
