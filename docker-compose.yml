@@ -7,7 +7,9 @@ services:
       - ./postgres_data:/var/lib/postgresql/data  # Persistent data storage
     env_file:
       - .env
-
+    networks:
+      - my_network
+      
   web:
     build:
       context: eldercare/
@@ -20,6 +22,8 @@ services:
       - .env
     depends_on:
       - db
+    networks:
+      - my_network
 
   nginx:
     image: nginx:latest
@@ -31,6 +35,12 @@ services:
     #      - ./ssl:/etc/nginx/ssl
     depends_on:
       - web
+    networks:
+      - my_network
+
 
 volumes:
   postgres_data:
+
+networks:
+  my_network:

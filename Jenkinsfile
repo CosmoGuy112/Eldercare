@@ -3,7 +3,7 @@ pipeline {
     environment {
         POSTGRES_NAME = 'eldercare'
         POSTGRES_USER = 'postgres'
-        POSTGRES_PASSWORD = 'guyza1234*'
+        POSTGRES_PASSWORD = 'Guyza5521'
         POSTGRES_HOST = 'db'
         POSTGRES_PORT = '5432'
     }
