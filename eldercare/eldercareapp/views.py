@@ -99,7 +99,7 @@ class UpdateCaregiver(View):
         form = CaregiverProfileForm(request.POST, request.FILES, instance=caregiver_profile)
 
         if form.is_valid():
-            print("Form is valid.")
+            
             # Save the updated form instance
             form.save()
             return redirect('listelder')  # Redirect to the home page after saving
@@ -135,7 +135,7 @@ class UpdateElder(View):
         form = ElderProfileForm(request.POST, request.FILES, instance=elder_profile)
 
         if form.is_valid():
-            print("Form is valid.")
+            
             # Save the updated form instance
             form.save()
             return redirect('home')  # Redirect to the home page after saving
@@ -149,10 +149,26 @@ class UpdateElder(View):
 
 class ListElderView(LoginRequiredMixin, View):
     def get(self, request):
-        applist = Appointment.objects.filter(caregiver_id=request.user.id)
-        elder = ElderProfile.objects.all()
+        # Fetch the caregiver's profile directly linked to the user
+        try:
+            care_id = request.user.caregiverprofile.id  # Assuming a OneToOneField in your model
+        except CaregiverProfile.DoesNotExist:
+            return render(request, 'listelder.html', {'error': 'Caregiver profile not found.'})
+
+        # Filter appointments by the caregiver's ID
+        applist = Appointment.objects.filter(caregiver_id=care_id)
+
+        # Optionally filter elders related to these appointments
+        elder = ElderProfile.objects.filter(id__in=applist.values_list('elder_id', flat=True))
+
+        # Check if the user belongs to the 'Caregiver' group
         is_caregiver = request.user.groups.filter(name='Caregiver').exists()
-        
+
+        # Debugging print statements
+        print(applist)
+        print(request.user.id)
+
+        # Render the context with elders, appointments, and caregiver status
         context = {
             'elderall': elder,
             'applist': applist,
@@ -163,28 +179,31 @@ class ListElderView(LoginRequiredMixin, View):
     def post(self, request):
         appointment_id = request.POST.get("appointment_id")
         new_status = request.POST.get(f"status_{appointment_id}")
-        
+
         if appointment_id and new_status:
             try:
-                # Update the appointment status in the database
                 appointment = Appointment.objects.get(id=appointment_id)
+
+                # Verify that the appointment belongs to the current caregiver
+                if appointment.caregiver_id != request.user.caregiverprofile.id:
+                    return render(request, 'listelder.html', {'error': 'Unauthorized action.'})
+
                 appointment.status = new_status
                 appointment.save()
 
-                # Redirect back to the appointment list view
                 return redirect('listelder')
             except Appointment.DoesNotExist:
-                # Handle the case where the appointment doesn't exist
                 return render(request, 'listelder.html', {'error': 'Appointment not found.'})
-        
-        return redirect('listelder')  # Default fallback to the list page
+
+        return redirect('listelder')
+
     
     
 class Elderdetail(View):
     def get(self, request,pk):
         eldernew = ElderProfile.objects.all()
         elder = ElderProfile.objects.filter(id=pk)
-        print(elder)
+        
         
         context = {
             'elderall': elder,
@@ -208,12 +227,13 @@ class CaregiverDetailView(DetailView):
 
 class BookAppointmentView(LoginRequiredMixin, View):
     def post(self, request, caregiver_id):
+        print(request.user.id)
         appointment_date = request.POST.get('appointment_date')
         location = request.POST.get('location')
 
         # ตรวจสอบว่า ElderProfile มีอยู่
-        elder_profile = get_object_or_404(ElderProfile, elder=request.user)
-
+        elder_profile = get_object_or_404(ElderProfile, elder=request.user.id)
+        print(request.user.id)
         # ตรวจสอบการจองที่มีอยู่ในวันที่นั้น
         existing_appointment = Appointment.objects.filter(
             caregiver_id=caregiver_id,
