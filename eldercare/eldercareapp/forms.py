@@ -19,7 +19,7 @@ class RegisterForm(UserCreationForm):
 class ElderProfileForm(forms.ModelForm):
     class Meta:
         model = ElderProfile
-        fields = ['id','name','age', 'address', 'photo']  # เดา
+        fields = ['id','name','age', 'address', 'photo', 'contact']  # เดา
 
 class CaregiverProfileForm(forms.ModelForm):
     class Meta:

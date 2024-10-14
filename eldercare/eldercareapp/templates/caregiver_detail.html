@@ -2,6 +2,14 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .fixed-image-size {
+        width: 200px;
+        height: 200px;
+        object-fit: cover; /* ปรับขนาดภาพให้เต็มพื้นที่ */
+    }
+</style>
+
 <h1>{{ caregiver.name }}</h1>
 
 {% if caregiver.photo %}
@@ -10,10 +18,8 @@
     <img src="{% static 'path/to/default/image.jpg' %}" alt="Default Image" class="fixed-image-size">
 {% endif %}
 
-
 <p>Experience: {{ caregiver.experience_years }} years</p>
 <p>Bio: {{ caregiver.bio }}</p>
-
 
 <h3>Book an Appointment</h3>
 <form method="POST" action="{% url 'book_appointment' caregiver.id %}">
