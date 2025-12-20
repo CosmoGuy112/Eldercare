@@ -15,6 +15,7 @@
                                     <th scope="col" class="h5">สถานที่</th>
                                     <th scope="col" class="h5">Caregiver</th>
                                     <th scope="col" class="h5">สถานะ</th>
+                                    <th scope="col" class="h5">การจัดการ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -24,7 +25,7 @@
                                     <td class="align-middle">{{ appointment.location }}</td>
                                     <td class="align-middle">{{ appointment.caregiver.name }}</td>
                                     <td class="align-middle">
-                                        <span class="badge rounded-pill 
+                                        <span class="badge rounded-pill
                                             {% if appointment.status == 'scheduled' %}bg-primary
                                             {% elif appointment.status == 'completed' %}bg-success
                                             {% elif appointment.status == 'cancelled' %}bg-danger
@@ -32,10 +33,22 @@
                                             {{ appointment.status }}
                                         </span>
                                     </td>
+                                    <td class="align-middle">
+                                        {% if appointment.status == 'scheduled' %}
+                                            <form method="POST" action="{% url 'cancel_appointment' appointment.id %}" style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการนัดหมายนี้?')">
+                                                    ยกเลิก
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="4" class="text-center py-4">ยังไม่มีการจอง</td>
+                                    <td colspan="5" class="text-center py-4">ยังไม่มีการจอง</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

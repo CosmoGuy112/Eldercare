@@ -53,10 +53,28 @@ class LoginView(View):
 
             # ตรวจสอบกลุ่มของผู้ใช้
             if user.groups.filter(name='Caregiver').exists():
-                return redirect('listelder')  # ถ้าเป็น Caregiver ไปหน้า listelder
+                # เช็คว่ามี CaregiverProfile และกรอกข้อมูลครบแล้วหรือยัง
+                try:
+                    caregiver = CaregiverProfile.objects.get(Caregiver=user)
+                    # ตรวจสอบว่ากรอกข้อมูลสำคัญครบแล้วหรือยัง
+                    if caregiver.name and caregiver.experience_years is not None and caregiver.bio:
+                        return redirect('listelder')  # มี profile ครบแล้ว -> ไปหน้า listelder
+                    else:
+                        return redirect('create_caregiver')  # มี profile แต่ข้อมูลไม่ครบ
+                except CaregiverProfile.DoesNotExist:
+                    return redirect('create_caregiver')  # ยังไม่มี profile
             else:
-                return redirect('create_elder')  # ถ้าเป็น Elder ไปหน้า home
-        
+                # Elder - เช็คว่ามี ElderProfile และกรอกข้อมูลครบแล้วหรือยัง
+                try:
+                    elder = ElderProfile.objects.get(elder=user)
+                    # ตรวจสอบว่ากรอกข้อมูลสำคัญครบแล้วหรือยัง
+                    if elder.name and elder.age is not None and elder.address:
+                        return redirect('home')  # มี profile ครบแล้ว -> ไปหน้า home
+                    else:
+                        return redirect('create_elder')  # มี profile แต่ข้อมูลไม่ครบ
+                except ElderProfile.DoesNotExist:
+                    return redirect('create_elder')  # ยังไม่มี profile
+
         return render(request, 'login.html', {"form": form})
 
 class LogoutView(View):
@@ -227,34 +245,50 @@ class CaregiverDetailView(DetailView):
 
 class BookAppointmentView(LoginRequiredMixin, View):
     def post(self, request, caregiver_id):
-        print(request.user.id)
+        from datetime import datetime
+        from django.utils import timezone
+
         appointment_date = request.POST.get('appointment_date')
         location = request.POST.get('location')
 
         # ตรวจสอบว่า ElderProfile มีอยู่
         elder_profile = get_object_or_404(ElderProfile, elder=request.user.id)
-        print(request.user.id)
+
+        # แปลง appointment_date string เป็น datetime object
+        try:
+            appointment_datetime = datetime.fromisoformat(appointment_date)
+            # ทำให้เป็น timezone-aware
+            appointment_datetime = timezone.make_aware(appointment_datetime)
+        except ValueError:
+            messages.error(request, "รูปแบบวันที่ไม่ถูกต้อง")
+            return redirect('caregiver_detail', pk=caregiver_id)
+
+        # ตรวจสอบว่าวันที่ที่เลือกไม่ได้อยู่ในอดีต
+        if appointment_datetime < timezone.now():
+            messages.error(request, "ไม่สามารถจองวันที่ผ่านมาแล้วได้")
+            return redirect('caregiver_detail', pk=caregiver_id)
+
         # ตรวจสอบการจองที่มีอยู่ในวันที่นั้น
         existing_appointment = Appointment.objects.filter(
             caregiver_id=caregiver_id,
-            appointment_date=appointment_date
+            appointment_date=appointment_datetime
         ).exists()
 
         if existing_appointment:
-            messages.error(request, "มีการจองวันซ้ำกันในวันนี้")  
-            return redirect('caregiver_detail', pk=caregiver_id)  # Redirect กลับไปที่หน้า detail
+            messages.error(request, "มีการจองวันและเวลานี้แล้ว กรุณาเลือกวันเวลาอื่น")
+            return redirect('caregiver_detail', pk=caregiver_id)
 
         # ถ้าไม่มีการจองซ้ำ ทำการสร้างการจอง
         Appointment.objects.create(
             elder=elder_profile,
             caregiver_id=caregiver_id,
-            appointment_date=appointment_date,
+            appointment_date=appointment_datetime,
             location=location,
             status='scheduled'
         )
 
-        messages.success(request, "จองสำเร็จ!")  # Alert สีเขียว
-        return redirect('caregiver_detail', pk=caregiver_id)
+        messages.success(request, "จองสำเร็จ!")
+        return redirect('appointment_history')  # Redirect ไปหน้าประวัติการจอง
     
 class UpdateStatusView(View):
     def post(self, request, appointment_id):
@@ -285,7 +319,7 @@ class AppointmentHistoryView(LoginRequiredMixin, View):
     def get(self, request):
         # ดึงข้อมูล ElderProfile ของผู้ใช้ที่เข้าสู่ระบบ
         elder_profile = get_object_or_404(ElderProfile, elder=request.user)
-        
+
         # ดึงข้อมูลการนัดหมายที่เกี่ยวข้องกับ ElderProfile นี้
         appointments = Appointment.objects.filter(elder=elder_profile)
 
@@ -294,4 +328,53 @@ class AppointmentHistoryView(LoginRequiredMixin, View):
         }
         return render(request, 'appointment_history.html', context)
 
-    
+class MyProfileView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request):
+        # ตรวจสอบว่าเป็น Elder หรือ Caregiver
+        is_elder = request.user.groups.filter(name='Elder').exists()
+        is_caregiver = request.user.groups.filter(name='Caregiver').exists()
+
+        profile = None
+        profile_type = None
+
+        if is_elder:
+            try:
+                profile = ElderProfile.objects.get(elder=request.user)
+                profile_type = 'elder'
+            except ElderProfile.DoesNotExist:
+                profile = None
+        elif is_caregiver:
+            try:
+                profile = CaregiverProfile.objects.get(Caregiver=request.user)
+                profile_type = 'caregiver'
+            except CaregiverProfile.DoesNotExist:
+                profile = None
+
+        context = {
+            'profile': profile,
+            'profile_type': profile_type,
+            'is_elder': is_elder,
+            'is_caregiver': is_caregiver,
+        }
+        return render(request, 'myprofile.html', context)
+
+class CancelAppointmentView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def post(self, request, appointment_id):
+        # ดึง appointment
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+
+        # ตรวจสอบว่าเป็นเจ้าของ appointment
+        if appointment.elder.elder == request.user:
+            appointment.status = 'cancelled'
+            appointment.save()
+            messages.success(request, "ยกเลิกการนัดหมายสำเร็จ")
+        else:
+            messages.error(request, "คุณไม่มีสิทธิ์ยกเลิกการนัดหมายนี้")
+
+        return redirect('appointment_history')
+
+

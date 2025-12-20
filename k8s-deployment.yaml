@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eldercare-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eldercare
+  template:
+    metadata:
+      labels:
+        app: eldercare
+    spec:
+      containers:
+      - name: eldercare-django
+        image: asia-southeast1-docker.pkg.dev/eldercare-platform/eldercare-repo/eldercare-app:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_HOST
+          value: "127.0.0.1"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: database
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: password
+        - name: ALLOWED_HOSTS
+          value: "*"
+
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
+        args:
+          - "--structured-logs"
+          - "--port=5432"
+          - "eldercare-platform:asia-southeast1:eldercare-db"
+        securityContext:
+          runAsNonRoot: true

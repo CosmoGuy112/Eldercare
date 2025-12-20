@@ -21,9 +21,26 @@
                     <li class="nav-item">
                         <span class="navbar-text text-light me-3">Hello, {{ user.username }}</span>
                     </li>
-                    
+
+                    <!-- เมนูสำหรับ Elder -->
+                    {% if user.groups.all.0.name == 'Elder' %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light me-2" href="{% url 'home' %}">หา Caregiver</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light me-2" href="{% url 'appointment_history' %}">ประวัติการจอง</a>
+                        </li>
+                    {% endif %}
+
+                    <!-- เมนูสำหรับ Caregiver -->
+                    {% if user.groups.all.0.name == 'Caregiver' %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light me-2" href="{% url 'listelder' %}">รายการนัดหมาย</a>
+                        </li>
+                    {% endif %}
+
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light me-2" href="{% url 'myprofile' %}">My Profile</a>
+                        <a class="nav-link btn btn-outline-light me-2" href="{% url 'myprofile' %}">โปรไฟล์</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-outline-light" href="{% url 'logout' %}">Logout</a>

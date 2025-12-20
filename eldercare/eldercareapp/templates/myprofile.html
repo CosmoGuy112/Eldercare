@@ -1,39 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    {% include 'nav.html' %}
-    <div class="container mt-5">
-        <h2>My Profile</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label>ชื่อ:</label>
-                {{ form.name }}
-            </div>
-            <div class="form-group">
-                <label>อายุ:</label>
-                {{ form.age }}
-            </div>
-            <div class="form-group">
-                <label>ที่อยู่:</label>
-                {{ form.address }}
-            </div>
-            <div class="form-group">
-                <label>รูปภาพ:</label>
-                {{ form.photo }}
-            </div>
-            <button type="submit" class="btn btn-primary">บันทึก</button>
-        </form>
-    </div>
+{% extends 'base.html' %}
+{% load static %}
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4 text-primary">โปรไฟล์ของฉัน</h2>
+                    
+                    {% if profile %}
+                        {% if profile_type == 'elder' %}
+                            <!-- Elder Profile -->
+                            <div class="text-center mb-4">
+                                {% if profile.photo %}
+                                    <img src="{{ profile.photo.url }}" alt="{{ profile.name }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">ชื่อ:</th>
+                                    <td>{{ profile.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>อายุ:</th>
+                                    <td>{{ profile.age }} ปี</td>
+                                </tr>
+                                <tr>
+                                    <th>ที่อยู่:</th>
+                                    <td>{{ profile.address }}</td>
+                                </tr>
+                                <tr>
+                                    <th>เบอร์โทร:</th>
+                                    <td>{{ profile.contact|default:"ไม่ระบุ" }}</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{% url 'create_elder' %}" class="btn btn-primary btn-lg">แก้ไขโปรไฟล์</a>
+                                <a href="{% url 'appointment_history' %}" class="btn btn-outline-primary btn-lg">ดูประวัติการจอง</a>
+                                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">หา Caregiver</a>
+                            </div>
+                            
+                        {% elif profile_type == 'caregiver' %}
+                            <!-- Caregiver Profile -->
+                            <div class="text-center mb-4">
+                                {% if profile.photo %}
+                                    <img src="{{ profile.photo.url }}" alt="{{ profile.name }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'path/to/default/image.jpg' %}" alt="Default" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">ชื่อ:</th>
+                                    <td>{{ profile.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>ประสบการณ์:</th>
+                                    <td>{{ profile.experience_years }} ปี</td>
+                                </tr>
+                                <tr>
+                                    <th>ข้อมูลเพิ่มเติม:</th>
+                                    <td>{{ profile.bio }}</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{% url 'create_caregiver' %}" class="btn btn-primary btn-lg">แก้ไขโปรไฟล์</a>
+                                <a href="{% url 'listelder' %}" class="btn btn-outline-primary btn-lg">ดูรายการนัดหมาย</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <!-- No Profile -->
+                        <div class="alert alert-warning text-center" role="alert">
+                            <h4 class="alert-heading">ยังไม่มีโปรไฟล์</h4>
+                            <p>กรุณากรอกข้อมูลโปรไฟล์ของคุณ</p>
+                            <hr>
+                            {% if is_elder %}
+                                <a href="{% url 'create_elder' %}" class="btn btn-primary">สร้างโปรไฟล์</a>
+                            {% elif is_caregiver %}
+                                <a href="{% url 'create_caregiver' %}" class="btn btn-primary">สร้างโปรไฟล์</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f8ff;
+        font-size: 18px;
+    }
+    .card {
+        border-radius: 15px;
+        background-color: #ffffff;
+    }
+    .text-primary {
+        color: #4682B4 !important;
+    }
+    .table th {
+        font-weight: bold;
+        color: #2F4F4F;
+    }
+</style>
+{% endblock %}

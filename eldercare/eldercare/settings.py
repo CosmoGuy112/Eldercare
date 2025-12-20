@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-t!g0t#1fsp$+v)2k-fr5-@$igov=v!l&t4zy$4m1^4p7!8)c&m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', '35.247.182.101','34.87.68.136']
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -78,11 +77,12 @@ WSGI_APPLICATION = 'eldercare.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),  # ชื่อ service ของฐานข้อมูลจาก docker-compose.yml
-        'PORT': os.environ.get('POSTGRES_PORT'),
+        # เปลี่ยนจาก POSTGRES_... เป็น DB_... ให้หมดครับ
+        'NAME': os.environ.get('DB_NAME', 'eldercare'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'ElderCare2024!Secure'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),  # สำคัญที่สุด! ต้องเป็น DB_HOST
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

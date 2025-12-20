@@ -17,5 +17,7 @@ urlpatterns = [
     path('caregiver/<int:pk>/', views.CaregiverDetailView.as_view(), name='caregiver_detail'),  # URL สำหรับดูรายละเอียด
     path('caregiver/<int:caregiver_id>/book/', views.BookAppointmentView.as_view(), name='book_appointment'),  # URL สำหรับการจอง
     path('appointment-history/', views.AppointmentHistoryView.as_view(), name='appointment_history'),
+    path('myprofile/', views.MyProfileView.as_view(), name='myprofile'),  # URL สำหรับดูโปรไฟล์ตัวเอง
+    path('appointment/<int:appointment_id>/cancel/', views.CancelAppointmentView.as_view(), name='cancel_appointment'),  # URL สำหรับยกเลิกนัดหมาย
 
 ]
